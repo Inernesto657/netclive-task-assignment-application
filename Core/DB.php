@@ -13,15 +13,46 @@ class DB {
     private $DBCONNECT;
     public  $SQL           = "";
     public  $SQLPARAMETERS = [];
-    /************************************* Connection Code ********************************/
 
-    public function __construct() {
+    /**
+     * This magic custom method allows
+     * decendants of this class to call
+     * inaccessible methods of this class
+     * @param $method (method name)
+     * @param $args (arguments passed to the method, if any)
+     * @return function (i.e the inaccessible method of this class)
+     */
+    public function __call($method, $args){
         
-        $this->connection();
+        return call_user_func_array([$this, $method], $args);
     }
 
     /**
-     * This function makes connection to the database
+     * This magic custom method allows
+     * decendants of this class to read
+     * inaccessible properties of this class
+     * @param $property (property name)
+     * @return mixed (the called property)
+     */
+    public function __get($property){
+
+        return $this->$property;
+    }
+
+    /**
+     * This magic custom method allows
+     * decendants of this class to write data to
+     * inaccessible properties of this class
+     * @param $property (property name)
+     * @param $value (data to write to the property)
+     */
+    public function __set($property, $value){
+
+        $this->$property = $value;
+    }
+
+    /**
+     * This method makes connection to the database
      * using PDO 
      * @return void
      */
@@ -44,13 +75,13 @@ class DB {
     }
 
     /**
-     * This function executes the sql statement
+     * This method executes the sql statement
      * using PDO
      * @param string $sql 
      * @param array $parameters (if any) 
      * @return void
      */
-    public function execute(string $sql = "", array $parameters = []) {
+    private function execute(string $sql = "", array $parameters = []) {
 
         $statement = $this->DBCONNECT->prepare($sql);
 
@@ -60,47 +91,37 @@ class DB {
     }
 
     /**
-     * This function strengthens the sql statement
+     * This method strengthens the sql statement
      * using PDO prepared statements
      * @return object $pdo
      */
-    public function prepare() {
+    private function prepare() { 
 
-        if(empty($this->SQLPARAMETERS)){
+        $pdo = $this->DBCONNECT->prepare($this->SQL);
 
-            $pdo = $this->DBCONNECT->prepare($this->SQL);
+        $pdo->execute(array_values($this->SQLPARAMETERS));
 
-            $this->SQLPARAMETERS = [];
-            
-            $this->SQL = "";
-        }else{   
+        $this->SQLPARAMETERS = [];
 
-            $pdo = $this->DBCONNECT->prepare($this->SQL);
-    
-            $pdo->execute(array_values($this->SQLPARAMETERS));
-
-            $this->SQLPARAMETERS = [];
-
-            $this->SQL = "";
-        }
+        $this->SQL = "";
 
         return $pdo;
     }
 
     /**
-     * This function sets the sql statement
+     * This method sets the sql statement
      * to fetch data from the database
      * @return object $this
      */    
     public function find(){
 
-        $this->SQL = "SELECT * FROM " . $this->db_table;
+        $this->SQL = "SELECT * FROM " . $this->DBTABLE;
 
         return $this;
     }
 
     /**
-     * This function returns number of
+     * This method returns number of
      * row count for the last executed
      * query
      * @return int rowcount
@@ -111,7 +132,7 @@ class DB {
     }
 
     /**
-     * This function is used to
+     * This method is used to
      * modify the sql statement
      * by adding the "WHERE" filters
      * @return function
@@ -122,12 +143,12 @@ class DB {
     }
 
     /**
-     * This function is called 
+     * This method is called 
      * when a single "WHERE" filter is needed
      * in the sql statement
      * @return object $this
      */
-    public function singleWhere(array $array){
+    private function singleWhere(array $array){
 
         $this->SQL .= " WHERE ";
 
@@ -142,12 +163,12 @@ class DB {
     }
 
     /**
-     * This function is called 
+     * This method is called 
      * when a multiple "WHERE" filters are needed
      * in the sql statement
      * @return object $this
      */
-    public function doubleWhere(array $array){
+    private function doubleWhere(array $array){
 
         foreach($array as $key => $value){
 
@@ -162,7 +183,7 @@ class DB {
     }
 
     /**
-     * This function is used to
+     * This method is used to
      * modify the sql statement
      * by adding the "LIMIT" filters
      * @return function
@@ -173,12 +194,12 @@ class DB {
     }
 
     /**
-     * This function is called 
+     * This method is called 
      * when a single "LIMIT" filter is needed
      * in the sql statement
      * @return object $this
      */
-    public function singleLimit($limit){
+    private function singleLimit($limit){
 
         $this->SQL .= " LIMIT {$limit} ";
 
@@ -186,12 +207,12 @@ class DB {
     }
 
     /**
-     * This function is called 
+     * This method is called 
      * when a multiple "LIMIT" filters are needed
      * in the sql statement
      * @return object $this
      */
-    public function doubleLimit(array $array){
+    private function doubleLimit(array $array){
 
         $this->SQL .= " LIMIT " . implode (" , ", $array);
 
@@ -199,34 +220,34 @@ class DB {
     }
 
     /**
-     * This function ckecks whether the sql
+     * This method ckecks whether the sql
      * statement is set
      * @return bool
      */
-    public function checkSql(){
+    private function checkSql(){
         
         return isset($this->SQL) ? true : false;
     }
 
     /**
-     * This function fetches the records
+     * This method fetches the records
      * after the pdo statement has been
      * executed
      * @param object $pdo
      * @return array $pdo result
      */
-    public function fetchThisRecord($pdo){
+    private function fetchThisRecord($pdo){
         
         return $pdo->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
-     * This function executes, fetches,
+     * This method executes, fetches,
      * as well as call the instantiation method
      * @return mixed array of object when the pdo execution 
      *               is true and bool when false
      */
-    public function fetchThisQuery(){
+    private function fetchThisQuery(){
         
         if($this->checkSql()){
             
@@ -249,35 +270,36 @@ class DB {
     }
 
     /**
-     * This function instantiates the results 
+     * This method instantiates the results 
      * of the pdo query to the calling model
      * @param array $row
      * @return object $this
      */
-    public function instantiation(array $row){
-        
-        foreach($array as $key => $value){
+    private function instantiation(array $row){
+        $obj  = new $this;
+
+        foreach($row as $key => $value){
             
-            $this->$key = $value;
+            $obj->$key = $value;
         }
         
-        return $this;
+        return $obj;
     }
 
     /**
-     * This function returns either the object
+     * This method returns either the object
      * of the record or an array of objects for 
      * multiple records
      * @param array $sql_record
      * @return mixed array|object
      */
-    public function recordArrayShift(array $sql_record){
+    private function recordArrayShift(array $sql_record){
         
-        return count($array) > 1 ? $array : array_shift($array);
+        return count($sql_record) > 1 ? $sql_record : array_shift($sql_record);
     }
 
     /**
-     * This function creates a new record in the database
+     * This method creates a new record in the database
      * @param array|object $data
      * @return mixed the last created id (int) when a record is successfully created
      *               and false (bool) when an error occurs
@@ -288,17 +310,17 @@ class DB {
 
         $placeholder = $this->preparedStatementPlaceHolder($this->SQLPARAMETERS);
 
-        $this->SQL = "INSERT INTO " . $this->db_table . " (" . implode( "," , array_keys($this->SQLPARAMETERS)) .  " ) VALUES (" . implode("," , array_values($placeholder)) . ")";
+        $this->SQL = "INSERT INTO " . $this->DBTABLE . " (" . implode( "," , array_keys($this->SQLPARAMETERS)) .  " ) VALUES (" . implode("," , array_values($placeholder)) . ")";
 
         return $this->prepare() ? $this->DBCONNECT->lastInsertId() : false;
     }
 
     /**
-     * This function converts objects to array
+     * This method converts objects to array
      * @param array|object $data
      * @return array $data
      */
-    public function convertObjectToArray(array|object $data) {
+    private function convertObjectToArray(array|object $data) {
 
 		if(is_object($data)){
 
@@ -309,12 +331,12 @@ class DB {
 	}
 
     /**
-     * This function creates place holders for the
+     * This method creates place holders for the
      * sql prepared statement
      * @param array $parameters
      * @return array $placeholder
      */
-    public function preparedStatementPlaceHolder(array $parameters) {
+    private function preparedStatementPlaceHolder(array $parameters) {
         $placeholder = [];
     
         foreach($parameters as $key){
@@ -325,7 +347,7 @@ class DB {
     }
 
     /**
-     * This function updates the database with
+     * This method updates the database with
      * a piece of data
      * @param array|object $data
      * @return mixed the updated id (int) when a record is successfully updated
@@ -341,7 +363,7 @@ class DB {
             $update[] = "{$key} = ?";
         }
         
-        $this->SQL  = "UPDATE " . $this->db_table . " SET ";
+        $this->SQL  = "UPDATE " . $this->DBTABLE . " SET ";
         $this->SQL .= implode(",", $update);
         $this->SQL .= " WHERE id = " . $this->id;
 
@@ -349,7 +371,7 @@ class DB {
     }
 
     /**
-     * This function calls either the update method or
+     * This method calls either the update method or
      * the create method. If the record already exists, the
      * update method is called otherwise the create method is
      * called.
@@ -364,14 +386,14 @@ class DB {
     }
 
     /**
-     * This function deletes a record from the database
+     * This method deletes a record from the database
      * @param array|object $data
      * @return mixed the deleted id (int) when a record is successfully deleted
      *               and false (bool) when an error occurs
      */
     public function delete(){
 
-        $this->SQL = "DELETE FROM " . $this->db_table . " WHERE id =" . $this->id;
+        $this->SQL = "DELETE FROM " . $this->DBTABLE . " WHERE id =" . $this->id;
 
         return $this->prepare() ? $this->id : false;
     }
