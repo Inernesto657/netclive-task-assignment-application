@@ -1,10 +1,12 @@
 <?php
 
 namespace Controllers;
+use Core\Controller;
 use Models\Users;
 use Models\Tasks;
 
-class Netclive {
+class Netclive extends Controller{
+    use TaskManagement;
 
     public function __construct(){
 
@@ -91,15 +93,9 @@ class Netclive {
     }
 
     public function index(){
-        
-        foreach($this->tasks as $task){
-            echo "<pre>";
+        // echo "yes";
 
-            echo $task->name;
-
-            echo "</pre>";
-
-        }
+        return $this->view("home.index", ["tasks" => ["fish", "cat", "dog"], "users" => ["maria", "ramos", "white"]]);
     }
 
     public function show(){

@@ -278,6 +278,10 @@ class DB {
     private function instantiation(array $row){
         $obj  = new $this;
 
+        foreach(get_object_vars($obj) as $key => $value){
+            unset($obj->$key);
+        }
+
         foreach($row as $key => $value){
             
             $obj->$key = $value;

@@ -29,12 +29,4 @@ spl_autoload_register(function($class){
  */
 (new Core\Boot());
 
-/**
- * Url query strigs
- * @var $url
- */
-$url = htmlspecialchars($_SERVER['QUERY_STRING']);
-
-(new Core\Router($url))->processUrlCall();
-
 ?>

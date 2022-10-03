@@ -1,6 +1,7 @@
 <?php
 
 namespace Core;
+use Core\Request;
 
 /**
  * This class is responsible for mapping
@@ -15,7 +16,7 @@ class Router {
      * Pattern for the regular expression
      * @var string $regexPattern
      */
-    private $regexPattern = "/^(?<controller>[\w\-\/]+)\/(?<action>[\w\-]*)\/*(?<argument>[\d\w\s\-]*)\/*$/i";
+    private $regexPattern = "/^(?<controller>[\w\-\+]+)\/(?<action>[\w\-\+]*)\/*(?<argument>[\d\w\s\-]*)\/*$/i";
 
     /**
      * Processed url varibles
@@ -38,6 +39,8 @@ class Router {
 
 
     public function __construct(public $url) {
+        $this->url = $this->removeQueryStringsVariables($this->url);
+
         $matches = [];
 
         preg_match($this->regexPattern, $this->url, $matches);
@@ -87,9 +90,9 @@ class Router {
      * to be passed when the method is called
      * @return string
      */
-    private function getArgument() : string{
+    private function getArgument() : array{
 
-        return $this->urlVariables['argument'];
+        return [$this->urlVariables['argument']];
     }
 
     /**
@@ -106,17 +109,26 @@ class Router {
         return $this;
     }
 
+    private function handleRequest() {
+        $request = new Request();
+
+        if($request->requestCheck){ 
+            array_unshift($this->parameters["argument"], $request->request());
+        }
+    }
+
     /**
      * This function processes the desired url call; 
      * @return;
      */
     public function processUrlCall(){
         if(class_exists($this->parameters['controller'])){
+            $this->handleRequest();
 
             $controller = $this->parameters['controller'];
             $method    =  $this->parameters['action'];
 
-            return (new $controller())->$method($this->parameters['argument']);
+            return (new $controller())->$method(...$this->parameters['argument']);
         }
 
         header("Location: ../Views/page_not_found.php");
@@ -130,7 +142,7 @@ class Router {
         
         $string = str_replace("-", " ", $string);
 
-        $string = str_replace("/", " ", $string);
+        $string = str_replace("+", " ", $string);
 
         return str_replace(" ", "", ucwords($string));
     }
@@ -144,5 +156,22 @@ class Router {
         return lcfirst(self::convertToStudlyCaps($string));
     }
 
+    private function removeQueryStringsVariables($url) : string {
+
+        if(!empty($url)){
+
+            $queryString = explode("&", $url, 2);
+
+            if(strpos($queryString[0], "&") == false){
+
+                $url = $queryString[0];
+            }else{
+
+                $url = "";
+            }
+        }
+
+        return $url;
+    }
 }
 ?>
