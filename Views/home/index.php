@@ -30,7 +30,7 @@
         <br>
         <select name="taskCartegory" id="taskCartegory" required>
             <option value="department manager">Task For Department Manager</option>
-            <option value="workers">Task For workers</option>
+            <option value="worker">Task For workers</option>
         </select>
 
         <br>

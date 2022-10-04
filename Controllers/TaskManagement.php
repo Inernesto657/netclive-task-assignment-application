@@ -3,6 +3,7 @@ namespace Controllers;
 use Models\Tasks;
 use Core\Request;
 use Models\Users;
+use Models\Roles;
 
 trait TaskManagement {
 
@@ -27,12 +28,12 @@ trait TaskManagement {
         
         if($user = (new Users())->find()->where(["id" => $_GET['id']])->fetchThisQuery()){
 
-            switch($user->role){
-                case "general manager":
+            switch($user->hierarchicalValue){
+                case 1:
                     return $this->createGeneralManagerTask($request);
                 break;
 
-                case "department manager":
+                case 2:
                     return $this->createDepartmentManagerTask($request, $user);
                 break;
 
@@ -50,7 +51,7 @@ trait TaskManagement {
 
         if($taskId = (new Tasks())->create($tasksData)){
 
-            $_SESSION['message'] = "Tasks has been successfully created!!!";
+            $_SESSION['message'] = "Task has been successfully created!!!";
             return header("Location: ?netclive/index/");
         }
     }
@@ -61,7 +62,7 @@ trait TaskManagement {
             
             if($taskId = (new Tasks())->create($tasksData)){
 
-                $_SESSION['message'] = "Tasks has been successfully created!!!";
+                $_SESSION['message'] = "Task has been successfully created!!!";
                 return header("Location: ?netclive/index/");
             }
         }
@@ -71,12 +72,17 @@ trait TaskManagement {
     }
 
     private function taskCreationPermissionForDepartmentManager(array|object $tasksData, object $user) {
+        $role = (new Roles())->find()->where(["name" => $tasksData->taskCartegory])->fetchThisQuery();
 
-        if($user->department != $tasksData->department || $user->role == $tasksData->taskCartegory){
+        if($user->department != $tasksData->department || $user->hierarchicalValue >= $role->hierarchicalValue){
             return false;
         }
 
         return true;
+    }
+
+    private function assignTask() {
+        
     }
 }
 ?>

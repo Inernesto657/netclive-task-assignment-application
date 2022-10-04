@@ -8,6 +8,19 @@ use Models\Tasks;
 class Netclive extends Controller{
     use TaskManagement;
 
+    /**
+     * Store total number of users in the company
+     * @var array $users
+     */
+    private array $users = [];
+
+    /**
+     * Store total numnber of tasks assigned in the company
+     * @var array $taskTotal
+     */
+    private array $tasks = [];
+
+
     public function __construct(){
 
         $this->fetchAllUsers();
@@ -51,49 +64,8 @@ class Netclive extends Controller{
 
         $this->$property = $value;
     }
-
-    /**
-     * Store total number of users in the company
-     * @var array $users
-     */
-    private array $users = [];
-
-    /**
-     * Store total numnber of tasks assigned in the company
-     * @var array $taskTotal
-     */
-    private array $tasks = [];
-
-    /**
-     * Fetch all users from the database into the $users property
-     */    
-    private function fetchAllUsers(){
-        $users = (new Users())->find()->fetchThisQuery();
-
-        foreach($users as $user){
-            $this->users[] = $user;
-        }
-    }
-
-    /**
-     * Fetch all tasks from the database into the $tasks property
-     */    
-    private function fetchAllTasks(){
-        $tasks = (new Tasks())->find()->fetchThisQuery();
-
-        if(is_array($tasks)){
-
-            foreach($tasks as $task){
-                $this->tasks[] = $task;
-            }
-        }else{
-
-            $this->tasks[] = $tasks;
-        }
-    }
-
+    
     public function index(){
-        // echo "yes";
 
         return $this->view("home.index", ["tasks" => ["fish", "cat", "dog"], "users" => ["maria", "ramos", "white"]]);
     }
@@ -131,6 +103,34 @@ class Netclive extends Controller{
     private function destroy(){
 
         
+    }
+
+    /**
+     * Fetch all users from the database into the $users property
+     */    
+    private function fetchAllUsers(){
+        $users = (new Users())->find()->fetchThisQuery();
+
+        foreach($users as $user){
+            $this->users[] = $user;
+        }
+    }
+
+    /**
+     * Fetch all tasks from the database into the $tasks property
+     */    
+    private function fetchAllTasks(){
+        $tasks = (new Tasks())->find()->fetchThisQuery();
+
+        if(is_array($tasks)){
+
+            foreach($tasks as $task){
+                $this->tasks[] = $task;
+            }
+        }else{
+
+            $this->tasks[] = $tasks;
+        }
     }
 }
 
