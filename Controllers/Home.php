@@ -1,12 +1,13 @@
 <?php
 
 namespace Controllers;
+use Core\Controller;
 
-class Home {
+class Home extends Controller{
 
     public function index(){
         
-        echo "home";
+        return $this->view("home.index");
     }
 }
 

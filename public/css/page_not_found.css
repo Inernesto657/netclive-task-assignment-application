@@ -1,19 +1,4 @@
-
-*{
-    margin: 0; padding: 0;
-    box-sizing: border-box;
-    outline: none; border: none;
-    text-decoration: none;
-    text-transform: capitalize;
-    transition: all .2s linear;
-}
-
-html{
-    font-size: 62.5%;
-    overflow-x: hidden;
-    scroll-padding-top: 5.5rem;
-    scroll-behavior: smooth;
-}
+@import url("main.css");
 
 .page-not-found{
     display: flex;
@@ -37,14 +22,7 @@ html{
 
 
 
-
-
 /* media queries */
-@media (max-width: 1200px) {
-    html {
-        font-size: 55%;
-    }
-}
 
 @media (max-width: 991px) {
     .page-not-found .image{
@@ -55,11 +33,5 @@ html{
 @media (max-width: 794px) {
     .page-not-found .image{
         object-position: left;
-    }
-}
-
-@media (max-width: 450px) {
-    html {
-        font-size: 50%;
     }
 }

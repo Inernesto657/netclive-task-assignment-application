@@ -4,6 +4,7 @@ namespace Controllers;
 use Core\Controller;
 use Models\Users;
 use Models\Tasks;
+use Core\Authentication as Auth;
 
 class Netclive extends Controller{
     use TaskManagement;
@@ -22,87 +23,48 @@ class Netclive extends Controller{
 
 
     public function __construct(){
-
-        $this->fetchAllUsers();
-
-        $this->fetchAllTasks();
-    }
-
-    /**
-     * This magic custom method allows
-     * decendants of this class to call
-     * inaccessible methods of this class
-     * @param $method (method name)
-     * @param $args (arguments passed to the method, if any)
-     * @return function (i.e the inaccessible method of this class)
-     */
-    public function __call($method, $args){
+        if((new Auth())->loggedIn()){
         
-        return call_user_func_array([$this, $method], $args);
-    }
+            parent::__construct();
 
-    /**
-     * This magic custom method allows
-     * decendants of this class to read
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @return mixed (the called property)
-     */
-    public function __get($property){
+            $this->auth();
 
-        return $this->$property;
-    }
+            $this->fetchAllUsers();
 
-    /**
-     * This magic custom method allows
-     * decendants of this class to write data to
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @param $value (data to write to the property)
-     */
-    public function __set($property, $value){
+            $this->fetchAllTasks();
+        }
 
-        $this->$property = $value;
+        return header("Location: /netclive-task-assignment-application/public/");
     }
     
     public function index(){
+        $user = (new Auth())->user();
 
-        return $this->view("home.index", ["tasks" => ["fish", "cat", "dog"], "users" => ["maria", "ramos", "white"]]);
+        switch($user->hierarchicalValue) {
+            case "1":
+                return $this->redirectToGeneralMangerRoute();
+            break;
+
+            case "2":
+                return $this->redirectToDepartmentManagerRoute();
+            break;
+
+            case "3":
+                return $this->redirectToWorkerRoute();
+            break;
+        }
     }
 
-    public function show(){
-
-
+    private function redirectToGeneralMangerRoute(){
+        return header("Location: /netclive-task-assignment-application/public/?general+manager/index");
     }
 
-    public function create(){
-
-
+    private function redirectToDepartmentManagerRoute(){
+        return header("Location: /netclive-task-assignment-application/public/?department+manager/index");
     }
 
-    public function store(){
-
-
-    }
-
-    public function edit(){
-
-
-    }
-
-    public function update(){
-
-
-    }
-
-    public function delete(){
-
-
-    }
-
-    private function destroy(){
-
-        
+    private function redirectToWorkerRoute(){
+        return header("Location: /netclive-task-assignment-application/public/?worker/index");
     }
 
     /**

@@ -1,12 +1,12 @@
 <?php
-
 namespace Core;
-use Core\View;
+use Models\Users;
 
-abstract class Controller {
+class Authentication {
+    public $id = false; 
 
-    public function __construct(){
-    
+    public function __construct() {
+
     }
 
     /**
@@ -44,11 +44,33 @@ abstract class Controller {
     public function __set($property, $value){
 
         $this->$property = $value;
-    }    
-
-    public function view($view, $data = []) {
-        return new View($view, $data);
     }
 
+    private function setAuthId() {
+        if(isset($_SESSION['user_id'])){
+
+            return $this->id = $_SESSION['user_id'];
+        }
+
+        return $this->id = false;
+    }
+
+    public function loggedIn() {
+        if($this->id){
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    public function user() {
+        if($this->loggedIn()) {
+
+            return (new Users())->find()->where(["id" => $this->id])->fetchThisQuery();
+        }
+
+        return false;
+    }
 }
 ?>

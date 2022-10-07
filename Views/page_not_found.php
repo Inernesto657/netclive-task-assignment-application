@@ -7,7 +7,7 @@
     <title>Page Not Found</title>
 
     <!-- custom css style link -->
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/page_not_found.css">
 </head>
 <body>
     

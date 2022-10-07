@@ -4,56 +4,52 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Netclive - Home</title>
+
+    <!-- font awesome cdn css link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+
+    <!-- custom css link -->
+    <link rel="stylesheet" href="/netclive-task-assignment-application/public/css/home.css">
+
 </head>
 <body>
     
-    <?php 
+    <!-- header section -->
+    <header>
+        <div id="menu-bar" class="fas fa-bars"></div>
 
-        if(isset($error)){
-            echo "<h1> {$error} </h1>";
-        }
+        <a href="/netclive-task-assignment-application/public/" class="logo"><span>N</span>etclive</a>
 
-        if(isset($message)){
-            echo "<h1> {$message} </h1>";
-        }        
-    ?>
-    <form action="?netclive/create+task/&id=3" method="post" enctype="multipart/form-data">
-        <label for="name">Task Name: </label>
-        <br>
-        <input type="text" name="name" id="name" required>
+        <nav class="navbar">
+            <a href="/netclive-task-assignment-application/public/?netclive/auth">admin</a>
+        </nav>
 
-        <br>
-        <br>
+        <div class="icons">
+            <i class="fas fa-user" id="login-btn"></i>
+        </div>
+    </header>
+    <!-- header section ends -->
 
-        <label for="taskCartegory">Select Task Cartegory:</label>
-        <br>
-        <select name="taskCartegory" id="taskCartegory" required>
-            <option value="department manager">Task For Department Manager</option>
-            <option value="worker">Task For workers</option>
-        </select>
+    <!-- login form container -->
+    <div class="login-form-container">
+        <i class="fas fa-times" id="form-close"></i>
 
-        <br>
-        <br>
+        <form action="/netclive-task-assignment-application/public/?login/facilitate" method="post">
+            <h3>login</h3>
+            <input type="email" name="email" class="box" placeholder="enter your company email">
+            <input type="password" name="password" class="box" placeholder="enter your password">
+            <input type="submit" value="click to enter your dashboard" class="btn">
+        </form>
+    </div>
 
-        <label for="department">Task Department:</label>
-        <br>
-        <select name="department" id="department" required>
-            <option value="sales">Sales</option>
-            <option value="production">Production</option>
-        </select>        
-        
-        <br>
-        <br>
+    <section class="home" id="home">
+        <div class="img-container">
+            <img src="/netclive-task-assignment-application/public/images/home.jpg" alt="">
+        </div>
+    </section>
 
-        <label for="description">Task Description:</label>
-        <br>
-        <textarea name="description" id="description" cols="30" rows="10" required></textarea>
 
-        <br>
-        <br>
-
-        <input type="submit" value="Create Task">
-    </form>
+    <script src="/netclive-task-assignment-application/public/js/home.js"></script>
 </body>
 </html>
