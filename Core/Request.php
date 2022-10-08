@@ -4,11 +4,6 @@ use Core\Router;
 use Exception;
 
 class Request {
-    // public static $requestCheck = false;
-    // public static $uploadsCheck = false;
-    // public static $uploads = [];
-    // public static $request = [];
-
     private $requestCheck = false;
     private $uploadsCheck = false;
     private $uploads = [];

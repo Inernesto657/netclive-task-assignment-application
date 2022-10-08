@@ -10,7 +10,7 @@ class GeneralManager extends Netclive {
 
         $users = $this->users;
 
-        $data = [];
+        $data  = [];
         
         $roles = (new Roles())->find()->fetchThisQuery();
 

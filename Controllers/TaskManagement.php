@@ -20,7 +20,6 @@ trait TaskManagement {
      * @return function (i.e the inaccessible method of this class)
      */
     public function __call($method, $args){
-        
         return call_user_func_array([$this, $method], $args);
     }
 

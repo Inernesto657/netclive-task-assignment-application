@@ -17,7 +17,7 @@ class Login {
             return header("Location: /netclive-task-assignment-application/public/?netclive/index");
         }
 
-        return header("Location: /netclive-task-assignment-application/public/");
+        // return header("Location: /netclive-task-assignment-application/public/");
     }
 
     public function cancel(){

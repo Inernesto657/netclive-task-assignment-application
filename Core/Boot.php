@@ -2,6 +2,7 @@
 
 namespace Core;
 use Core\Request;
+use Core\Authentication as Auth;
 
 /**
  * This Class initializes core and important
@@ -23,6 +24,7 @@ class Boot{
     private function integrateCoreFunctionalities(){
         set_exception_handler([$this, "customException"]);
         (new Request())->runRouter();
+        (new Auth());
         include_once("functions.php");
     }
 

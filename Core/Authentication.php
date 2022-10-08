@@ -6,7 +6,7 @@ class Authentication {
     public $id = false; 
 
     public function __construct() {
-
+        $this->setAuthId();
     }
 
     /**
