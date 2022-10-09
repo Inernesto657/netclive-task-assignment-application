@@ -21,7 +21,7 @@
 
         <a href="/netclive-task-assignment-application/public/" class="logo"><span>N</span>etclive</a>
 
-        <nav class="navbar">
+        <nav class="navbar admin">
             <a href="/netclive-task-assignment-application/public/?netclive/auth">admin</a>
         </nav>
 
