@@ -5,23 +5,26 @@ use Core\Controller;
 use Models\Users;
 use Models\Tasks;
 use Core\Authentication as Auth;
+use Models\Notifications;
+use PDO;
+use PDOException;
 
 class Netclive extends Controller{
-    use TaskManagement;
+    use TaskManager, NotificationManager;
 
     /**
      * Store total number of users in the company
-     * @var array $users
+     * @var $users
      */
-    private array $users = [];
+    protected $users = [];
 
     /**
      * Store total numnber of tasks assigned in the company
-     * @var array $taskTotal
+     * @var $tasks
      */
-    private array $tasks = [];
+    protected $tasks = [];
 
-    private $num = "one";
+    protected $notificationsTabs = [];
 
 
     public function __construct(){
@@ -30,6 +33,8 @@ class Netclive extends Controller{
             $this->fetchAllUsers();
 
             $this->fetchAllTasks();
+
+            $this->fetchNotificationsTabs();
         }else{
 
             header("Location: /netclive-task-assignment-application/public/");
@@ -46,7 +51,11 @@ class Netclive extends Controller{
      */
     public function __call($method, $args){
         
-        return call_user_func_array([$this, $method], $args);
+        if(method_exists($this, $method)) {
+            return call_user_func_array([$this, $method], $args);
+        }
+
+        return $this->permissionRestricted();
     }
 
     /**
@@ -58,7 +67,11 @@ class Netclive extends Controller{
      */
     public function __get($property){
 
-        return $this->$property;
+        if(property_exists($this, $property)) {
+            return $this->$property;
+        }
+
+        return $this->permissionRestricted();
     }
 
     /**
@@ -70,22 +83,26 @@ class Netclive extends Controller{
      */
     public function __set($property, $value){
 
-        $this->$property = $value;
+        if(property_exists($this, $property)) {
+            $this->$property = $value;
+        }
+
+        return $this->permissionRestricted();
     }    
     
-    public function index(){
+    protected function index(){
         $user = (new Auth())->user();
 
         switch($user->hierarchicalValue) {
-            case "1":
+            case 1:
                 return $this->redirectToGeneralMangerRoute();
             break;
 
-            case "2":
+            case 2:
                 return $this->redirectToDepartmentManagerRoute();
             break;
 
-            case "3":
+            case 3:
                 return $this->redirectToWorkerRoute();
             break;
         }
@@ -106,29 +123,57 @@ class Netclive extends Controller{
     /**
      * Fetch all users from the database into the $users property
      */    
-    private function fetchAllUsers(){
+    private function fetchAllUsers() {
         $users = (new Users())->find()->fetchThisQuery();
 
-        foreach($users as $user){
-            $this->users[] = $user;
+        if(is_object($users)){
+
+            $this->users[] = $users;
+        }else{
+
+            $this->users = $users;
         }
     }
 
     /**
      * Fetch all tasks from the database into the $tasks property
      */    
-    private function fetchAllTasks(){
+    private function fetchAllTasks() {
         $tasks = (new Tasks())->find()->fetchThisQuery();
 
-        if(is_array($tasks)){
-
-            foreach($tasks as $task){
-                $this->tasks[] = $task;
-            }
-        }else{
+        if(is_object($tasks)){
 
             $this->tasks[] = $tasks;
+        }else{
+
+            $this->tasks = $tasks;
         }
+    }
+
+    private function fetchNotificationsTabs() {
+        $user = (new Auth())->user();
+
+        $notificationsTabs = [];
+
+        $notifications = (new Notifications());
+
+        $sql = "SELECT * FROM " . $notifications->DBTABLE . " WHERE time >= ?";
+
+        $notifications = $notifications->execute($sql, [$user->updatedAt])->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($notifications as $notification){
+
+            $notificationsTabs[] = (object) $notification;
+        }
+
+        $this->notificationsTabs = $notificationsTabs;
+    }
+
+    protected function permissionRestricted() {
+        
+        $_SESSION["error"] = "Access Denied: You cannot not proceed with this action";
+
+        return header("Location: ?netclive/index/");
     }
 }
 

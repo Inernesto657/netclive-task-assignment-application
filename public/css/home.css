@@ -11,7 +11,7 @@
     outline: none; border: none;
     text-decoration: none;
     text-transform: capitalize;
-    transition: all .2s linear;
+    transition: all .1s linear;
 }
 
 *::selection{
@@ -76,14 +76,6 @@ header .logo span {
     color: var(--orange);
 }
 
-header .navbar {
-    display: none;
-}
-
-header .navbar.admin {
-    display: block;
-}
-
 header .navbar a {
     color: #fff;
     font-size: 2rem;
@@ -91,18 +83,22 @@ header .navbar a {
     display: none;
 }
 
+header .navbar a.active {
+    display: inline-block;
+}
+
 header .navbar a:hover {
     color: var(--orange);
 }
 
-header .icons i {
-    font-size: 2.5rem;
+header .icons {
+    font-size: 2.2rem;
     color: #fff;
     cursor: pointer;
     margin-right: 2rem;
 }
 
-header .icons i:hover {
+header .icons:hover {
     color: var(--orange);
 }
 
@@ -248,11 +244,14 @@ header .icons i:hover {
     }
 
     header .navbar a {
-        display: block;
         border-radius: .5rem;
         padding: 1.5rem;
         margin: 1.5rem 0;
         background: #222;
+    }
+
+    header .navbar a.active {
+        display: block;
     }
 
     .home .img-container {
@@ -263,5 +262,9 @@ header .icons i:hover {
 @media (max-width: 450px) {
     html {
         font-size: 50%;
+    }
+
+    header .icons {
+        font-size: 2.1rem;
     }
 }

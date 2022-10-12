@@ -5,7 +5,7 @@ use Core\Request;
 use Models\Users;
 use Models\Roles;
 
-trait TaskManagement {
+trait TaskManager {
 
     public function __construct(){
 
@@ -23,28 +23,32 @@ trait TaskManagement {
         return call_user_func_array([$this, $method], $args);
     }
 
-    public function createTask(Request $request) {
+    // public function showCreateTaskForm() {
+    //     return $this->view("admin.show_create_task_form");
+    // }
+
+    // public function createTask(Request $request) {
         
-        if($user = (new Users())->find()->where(["id" => $_GET['id']])->fetchThisQuery()){
+    //     if($user = (new Auth())->user()){
 
-            switch($user->hierarchicalValue){
-                case 1:
-                    return $this->createGeneralManagerTask($request);
-                break;
+    //         switch($user->hierarchicalValue){
+    //             case 1:
+    //                 return $this->createGeneralManagerTask($request);
+    //             break;
 
-                case 2:
-                    return $this->createDepartmentManagerTask($request, $user);
-                break;
+    //             case 2:
+    //                 return $this->createDepartmentManagerTask($request, $user);
+    //             break;
 
-                default:
-                    $_SESSION['error'] = "Access Denied: You cannot create this task";
-                    return header("Location: ?netclive/index/");
-            }
-        }
+    //             default:
+    //                 $_SESSION['error'] = "Access Denied: You cannot create this task";
+    //                 return header("Location: ?netclive/index/");
+    //         }
+    //     }
 
-        $_SESSION['error'] = "Access Denied: You cannot create this task";
-        return header("Location: ?netclive/index/"); 
-    }
+    //     $_SESSION['error'] = "Access Denied: You cannot create this task";
+    //     return header("Location: ?netclive/index/"); 
+    // }
 
     private function createGeneralManagerTask(array|object $tasksData) {
 
@@ -80,8 +84,8 @@ trait TaskManagement {
         return true;
     }
 
-    private function assignTask() {
+    // public function assignTask() {
         
-    }
+    // }
 }
 ?>

@@ -21,12 +21,14 @@
 
         <a href="/netclive-task-assignment-application/public/" class="logo"><span>N</span>etclive</a>
 
-        <nav class="navbar admin">
-            <a href="/netclive-task-assignment-application/public/?netclive/auth">admin</a>
+        <nav class="navbar">
+            <a href="/netclive-task-assignment-application/public/?netclive/index" 
+                class=<?php echo $auth->loggedIn() ? "active" : ""; ?>
+            >admin</a>
         </nav>
 
-        <div class="icons">
-            <i class="fas fa-user" id="login-btn"></i>
+        <div class="icons" id="login-btn">
+            login <i class="fas fa-user"></i>
         </div>
     </header>
     <!-- header section ends -->
