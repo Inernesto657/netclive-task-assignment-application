@@ -13,7 +13,7 @@
         </div>
 
         <section class="task-create-form">
-            <h2>add new task</h2>
+            <h2>create new task</h2>
 
             <form action="/netclive-task-assignment-application/public/?general+manager/create+task" method="post">
                 <label for="name">name:</label>
@@ -23,6 +23,7 @@
                 <select name="taskCartegory" id="" required>
                     <optgroup label="--select a role for this task--">
                         <option value="">--select from list--</option>
+                        <option value="general manager">general manager</option>
                         <option value="department manager">department manager</option>
                         <option value="worker">worker</option>
                     </optgroup>
@@ -32,6 +33,7 @@
                 <select name="taskCartegoryHierarchicalValue" id="" required>
                     <optgroup label="--select a role for this task--">
                         <option value="">--select from list--</option>
+                        <option value="1">select this option for the general manager</option>
                         <option value="2">select this option for department managers</option>
                         <option value="3">select this option for workers</option>
                     </optgroup>
@@ -41,6 +43,7 @@
                 <select name="department" id="" required>
                     <optgroup label="--select task department--">
                         <option value="">--select from list--</option>
+                        <option value="nil">none</option>
                         <option value="sales">sales</option>
                         <option value="production">production</option>
                     </optgroup>

@@ -4,6 +4,7 @@ use Controllers\Netclive;
 use Models\Roles;
 use Models\Users;
 use Models\Tasks;
+use Models\TaskRequests as TRs;
 use Models\AssignedTasks as ATs;
 use Models\Notifications;
 use Core\Authentication as Auth;
@@ -67,7 +68,40 @@ class GeneralManager extends Netclive {
 
         $notificationsTabs = $this->notificationsTabs;
 
-        return $this->view("admin.general_manager.index", compact("notificationsTabs", "auth", $data));
+        $roles = (new Roles())->find()->fetchThisQuery();
+
+        $tasksObj = (new ATs())->find()->where(["assignee" => $auth->email])->fetchThisQuery();
+
+        if(is_object($tasksObj)){
+
+            $tasks[] = $tasksObj;
+        }else{
+
+            $tasks = $tasksObj;
+        }
+
+        return $this->view("admin.general_manager.index", compact("notificationsTabs", "roles", "tasks", "auth", $data));
+    }
+
+    private function updateTaskStatus(int $taskId) {
+        $auth = (new Auth())->user();
+
+        if(
+            $task = (new ATs())->find()->where([
+                "assignee" => $auth->email,
+                "taskId"   => $taskId
+            ])->fetchThisQuery()
+        ){
+            $taskUpdate = $task->update(["status" => "completed"]);
+
+            $_SESSION['message'] = "this task {$task->taskName} has now been updated to completed!!!";
+            
+            return header("Location: ?general+manager/index");
+        }
+
+        $_SESSION['error'] = "sorry this task was not found!!!";
+            
+        return header("Location: ?general+manager/index");
     }
 
     private function allUsers() {
@@ -304,25 +338,51 @@ class GeneralManager extends Netclive {
 
         $auth = (new Auth())->user();
 
-        $users = $this->users;
+        $task = (new Tasks())->find()->where(["id" => $taskId])->fetchThisQuery();
+
+        $users = [];
+
+        foreach($this->users as $user){
+
+            if($user->department == $task->department) {
+
+                $users[] = $user;
+            }
+        }
 
         $roles = (new Roles())->find()->fetchThisQuery();
 
         $notificationsTabs = $this->notificationsTabs;
 
-        $task = (new Tasks())->find()->where(["id" => $taskId])->fetchThisQuery();
-
         return $this->view("admin.general_manager.assign_task_form", compact("auth", "users", "roles", "notificationsTabs", "task", $data));
     }
 
     private function assignTask(Request $request) {
-        if($taskAssignmentId = (new ATs())->create($request)){
+        $taskAssignmentObj = (new ATs())->find()->where(["assignee" => $request->assignee])->fetchThisQuery();
 
-            $task = (new Tasks())->find()->where(["id" => $request->taskId])->fetchThisQuery();
+        if(is_array($taskAssignmentObj)){
 
-            $task->save(["status" => "assigned"]);
+            $taskAssignments = $taskAssignmentObj;
+        }else{
 
-            $_SESSION['message'] = "task has been assigned!!!";
+            $taskAssignments[] = $taskAssignmentObj;
+        }
+
+        if(count($taskAssignments) < 3){
+
+            if($taskAssignmentId = (new ATs())->create($request)){
+
+                $task = (new Tasks())->find()->where(["id" => $request->taskId])->fetchThisQuery();
+
+                $task->save(["status" => "assigned"]);
+
+                $_SESSION['message'] = "task has been assigned!!!";
+
+                return header("Location: ?general+manager/all+tasks");
+            }
+        }else{
+
+            $_SESSION['error'] = "sorry, can not assign more than 3 tasks to an assignee!!!";
 
             return header("Location: ?general+manager/all+tasks");
         }
@@ -339,12 +399,12 @@ class GeneralManager extends Netclive {
 
             $_SESSION['message'] = "task assignment has been cancelled!!!";
 
-            return header("Location: ?netclive/index/");
+            return header("Location: ?general+manager/all+tasks");
         }
 
         $_SESSION['error'] = "sorry this task has not been assigned yet!!!";
 
-        return header("Location: ?netclive/index/");
+        return header("Location: ?general+manager/all+tasks");
     }
 
     private function deleteTask(int $taskId) {
@@ -358,19 +418,19 @@ class GeneralManager extends Netclive {
 
                         $_SESSION['message'] = "task has been deleted!!!";
 
-                        return header("Location: ?netclive/index/");
+                        return header("Location: ?general+manager/all+tasks");
                     }
                 }
 
                 $_SESSION['message'] = "task has been deleted!!!";
 
-                return header("Location: ?netclive/index/");
+                return header("Location: ?general+manager/all+tasks");
             }
         }
 
         $_SESSION['error'] = "sorry this task does not exist!!!";
 
-        return header("Location: ?netclive/index/");
+        return header("Location: ?general+manager/all+tasks");
     }
 
     private function showNotificationsTabs() {
@@ -403,7 +463,64 @@ class GeneralManager extends Netclive {
 
             $_SESSION['message'] = "notifications have been deleted!!!";
 
-            return header("Location: ?netclive/index/show+notifications+tabs");
+            return header("Location: ?general+manager/show+notifications+tabs");
+        }
+    }
+
+    private function showRequests() {
+        $data  = [];
+        
+        $auth = (new Auth())->user();
+
+        $notificationsTabs = $this->notificationsTabs;
+
+        $taskRequestsObj = (new TRs())->find()->fetchThisQuery();
+
+        if(is_object($taskRequestsObj)){
+
+            $taskRequests[] = $taskRequestsObj;
+        }else{
+
+            $taskRequests = $taskRequestsObj;
+        }
+
+        return $this->view("admin.general_manager.task_requests", compact("auth", "notificationsTabs", "taskRequests", $data));
+    }
+
+    private function resolveTaskRequest(int $taskRequestId) {
+        $taskId = $_GET['task_id'];
+
+
+        if($taskRequest = (new TRs())->find()->where(
+            [
+                "id"     => $taskRequestId,
+                "taskId" => $taskId
+            ]
+        )->fetchThisQuery()){
+
+            $taskRequest->update(["status" => "approved"]);
+
+            $_SESSION['message'] = "task request has been approved!!!";
+
+            return header("Location: ?general+manager/show+requests");
+        }
+    }
+
+    private function unresolveTaskRequest(int $taskRequestId) {
+        $taskId = $_GET['task_id'];
+
+        if($taskRequest = (new TRs())->find()->where(
+            [
+                "id"     => $taskRequestId,
+                "taskId" => $taskId
+            ]
+        )->fetchThisQuery()){
+
+            $taskRequest->update(["status" => "unapproved"]);
+
+            $_SESSION['message'] = "task request has been unapproved!!!";
+
+            return header("Location: ?general+manager/show+requests");
         }
     }
 } 

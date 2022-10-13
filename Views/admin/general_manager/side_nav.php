@@ -11,6 +11,7 @@
             <a href="/netclive-task-assignment-application/public/?general+manager/show+notifications+tabs" >notifications</a>
             <div class="icon <?php echo ($notificationsTabs) ? "active" : ""; ?>"></div>
         </div>
+        <a href="/netclive-task-assignment-application/public/?general+manager/show+requests">Requests</a>
         <a href="/netclive-task-assignment-application/public/?general+manager/show+create+task+form">create task</a>
         <a href="/netclive-task-assignment-application/public/?general+manager/show+assigned+tasks">assigned tasks</a>
         <a href="/netclive-task-assignment-application/public/?general+manager/show+unassigned+tasks">unassigned tasks</a>

@@ -13,7 +13,7 @@
         </div>
 
         <section class="task-info">
-            <h2>list of tasks</h2>
+            <h2>list of unassigned tasks for production department</h2>
 
             <table class="table">
                 <thead>
@@ -56,14 +56,6 @@
 
                                 <td>
                                     <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/show+assign+task+form/<?php echo $task->id; ?>">assign</a>
-                                </td>
-
-                                <td>
-                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/cancel+task/<?php echo $task->id; ?>">cancel</a>
-                                </td>
-
-                                <td>
-                                    <a class="btn delete-btn" href="/netclive-task-assignment-application/public/?general+manager/delete+task/<?php echo $task->id; ?>">delete</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

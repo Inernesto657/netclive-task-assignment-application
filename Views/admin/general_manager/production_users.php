@@ -13,7 +13,7 @@
         </div>
 
         <section class="task-info">
-            <h2>list of users</h2>
+            <h2>list of users for production department</h2>
 
             <table class="table">
                 <thead>

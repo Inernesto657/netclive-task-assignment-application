@@ -13,50 +13,43 @@
         </div>
 
         <section class="task-info">
-            <h2>list of users for sales department</h2>
+            <h2>list of tasks</h2>
 
             <table class="table">
                 <thead>
                     <tr>
-                        <td>id</td>
-                        <td>First Name</td>
-                        <td>Last Name</td>
-                        <td>Role</td>
-                        <td>Department</td>
+                        <td>task id</td>
+                        <td>requeter</td>
+                        <td>description</td>
+                        <td>status</td>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if($users) : ?>
-                        <?php foreach($users as $user) : ?>
+                    <?php if($taskRequests) : ?>
+                        <?php foreach($taskRequests as $taskRequest) : ?>
                             <tr>
                                 <td>
-                                    <?php echo ucfirst($user->id); ?>
+                                    <?php echo ucfirst($taskRequest->taskId); ?>
                                 </td>
                         
                                 <td>
-                                    <?php echo ucfirst($user->firstName); ?>
+                                    <?php echo ucfirst($taskRequest->requester); ?>
                                 </td>
 
                                 <td>
-                                    <?php echo ucfirst($user->lastName); ?>
+                                    <?php echo ucfirst($taskRequest->description); ?>
                                 </td>
 
                                 <td>
-                                    <?php foreach ($roles as $role): ?>
-
-                                        <?php if($user->hierarchicalValue == $role->hierarchicalValue): ?>
-
-                                            <?php echo ucfirst($role->name); ?>
-
-                                            <?php break; ?>
-
-                                        <?php endif; ?>
-
-                                    <?php endforeach; ?>
+                                    <?php echo ucfirst($taskRequest->status); ?>
                                 </td>
 
                                 <td>
-                                    <?php echo ucfirst($user->department); ?>
+                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/resolve+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">approve</a>
+                                </td>
+
+                                <td>
+                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/unresolve+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">unapprove</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

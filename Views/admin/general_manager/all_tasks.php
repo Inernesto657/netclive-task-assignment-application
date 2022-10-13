@@ -54,13 +54,21 @@
                                     <?php echo ucfirst($task->status); ?>
                                 </td>
 
-                                <td>
-                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/show+assign+task+form/<?php echo $task->id; ?>">assign</a>
-                                </td>
+                                <?php if($task->status == "unassigned"): ?>
 
-                                <td>
-                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/cancel+task/<?php echo $task->id; ?>">cancel</a>
-                                </td>
+                                    <td>
+                                        <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/show+assign+task+form/<?php echo $task->id; ?>">assign</a>
+                                    </td>
+
+                                <?php endif; ?>
+
+                                <?php if($task->status == "assigned"): ?>
+
+                                    <td>
+                                        <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/cancel+task/<?php echo $task->id; ?>">cancel</a>
+                                    </td>
+                                
+                                <?php endif; ?>
 
                                 <td>
                                     <a class="btn delete-btn" href="/netclive-task-assignment-application/public/?general+manager/delete+task/<?php echo $task->id; ?>">delete</a>

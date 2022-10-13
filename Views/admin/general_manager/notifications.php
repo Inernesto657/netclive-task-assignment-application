@@ -13,7 +13,7 @@
         </div>
 
         <section class="notifications-tab">
-            <h2>Notifications</h2>
+            <h2>notifications</h2>
 
             <table class="table">
                 <thead>
