@@ -19,8 +19,8 @@
                 <thead>
                     <tr>
                         <td>task id</td>
-                        <td>requeter</td>
                         <td>description</td>
+                        <td>department</td>
                         <td>status</td>
                     </tr>
                 </thead>
@@ -31,25 +31,25 @@
                                 <td>
                                     <?php echo ucfirst($taskRequest->taskId); ?>
                                 </td>
-                        
-                                <td>
-                                    <?php echo ucfirst($taskRequest->requester); ?>
-                                </td>
 
                                 <td>
                                     <?php echo ucfirst($taskRequest->description); ?>
                                 </td>
 
                                 <td>
+                                    <?php echo ucfirst($taskRequest->taskDepartment); ?>
+                                </td>                                
+
+                                <td>
                                     <?php echo ucfirst($taskRequest->status); ?>
                                 </td>
 
                                 <td>
-                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/resolve+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">approve</a>
+                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?general+manager/approve+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">approve</a>
                                 </td>
 
                                 <td>
-                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/unresolve+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">unapprove</a>
+                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/unapprove+task+request/<?php echo $taskRequest->id; ?>&task_id=<?php echo $taskRequest->taskId; ?>">unapprove</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -24,6 +24,17 @@ class Netclive extends Controller{
      */
     protected $tasks = [];
 
+    protected $notificationMessage = [
+        "createTask"        =>  "a task with id :id was created by :by",
+        "assignTask"        =>  "a task with id :id was assigned by :by and has been assigned to :to",
+        "taskRequest"       =>  "a request to cancel a task assignment with task id :id was made by :by",
+        "cancelTask"        =>  "a task assignment with task id :id was cancelled by :by",
+        "deleteTask"        =>  "a task with id :id was deleted by :by",
+        "completeTask"      =>  "a task with id :id was completed by :by",
+        "approveRequest"    =>  "a task request with task id :id was approved by :by",
+        "unapproveRequest"  =>  "a task request with task id :id was unapproved by :by",
+    ];
+
     protected $notificationsTabs = [];
 
 
@@ -174,6 +185,28 @@ class Netclive extends Controller{
         $_SESSION["error"] = "Access Denied: You cannot not proceed with this action";
 
         return header("Location: ?netclive/index/");
+    }
+
+    protected function pushNotificationCreation(string $action, string $taskId, string $taskDepartment) {
+        $actionMessage = $this->notificationMessage[$action] ?? "";
+
+        $user = (new Auth())->user();
+
+        $action = str_ireplace(":id", $taskId, $actionMessage);
+
+        $action = str_ireplace(":by", $user->email, $action);
+
+        if(func_num_args() > 3) {
+
+            $action = str_ireplace(":to", func_get_arg(3), $action);
+        }
+
+        return (new Notifications())->save(
+            [
+                "action"      => $action,
+                "department"  => $taskDepartment
+            ]
+        );
     }
 }
 

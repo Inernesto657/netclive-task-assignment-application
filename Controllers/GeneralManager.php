@@ -94,6 +94,8 @@ class GeneralManager extends Netclive {
         ){
             $taskUpdate = $task->update(["status" => "completed"]);
 
+            $this->pushNotificationCreation("completeTask", $task->id, $task->department);
+
             $_SESSION['message'] = "this task {$task->taskName} has now been updated to completed!!!";
             
             return header("Location: ?general+manager/index");
@@ -328,7 +330,10 @@ class GeneralManager extends Netclive {
         
         if($taskId = (new Tasks())->create($request)){
 
+            $this->pushNotificationCreation("createTask", $taskId, $request->department);
+
             $_SESSION['message'] = "task has been successfully created!!!";
+
             return header("Location: ?general+manager/show+create+task+form");
         }
     }
@@ -376,6 +381,8 @@ class GeneralManager extends Netclive {
 
                 $task->save(["status" => "assigned"]);
 
+                $this->pushNotificationCreation("assignTask", $task->id, $request->assigneeDepartment, $request->assignee);
+
                 $_SESSION['message'] = "task has been assigned!!!";
 
                 return header("Location: ?general+manager/all+tasks");
@@ -396,6 +403,8 @@ class GeneralManager extends Netclive {
             $task = (new Tasks())->find()->where(["id" => $taskId])->fetchThisQuery();
 
             $task->save(["status" => "unassigned"]);
+
+            $this->pushNotificationCreation("cancelTask", $task->id, $task->department);
 
             $_SESSION['message'] = "task assignment has been cancelled!!!";
 
@@ -422,6 +431,8 @@ class GeneralManager extends Netclive {
                     }
                 }
 
+                $this->pushNotificationCreation("deleteTask", $task->id, $task->department);
+
                 $_SESSION['message'] = "task has been deleted!!!";
 
                 return header("Location: ?general+manager/all+tasks");
@@ -446,7 +457,9 @@ class GeneralManager extends Netclive {
     }
 
     private function notificationViewUpdate() {
-        if($userId = (new Auth())->user()->update(["updatedAt" => date("y-m-d h:i:s", strtotime("now"))])){
+        date_default_timezone_set("America/New_York");
+
+        if($userId = (new Auth())->user()->update(["updatedAt" => date("Y-m-d H:i:s")])){
 
             $_SESSION['message'] = "notifications marked as viewed";
 
@@ -455,11 +468,15 @@ class GeneralManager extends Netclive {
     }
 
     private function deleteNotifications() {
+        date_default_timezone_set("America/New_York");
+
         $notifications = (new Notifications());
 
         $sql = "DELETE FROM " . $notifications->DBTABLE;
 
         if($notificationsDeleted = $notifications->execute($sql)){
+
+            (new Auth())->user()->update(["updatedAt" => date("Y-m-d H:i:s")]);
 
             $_SESSION['message'] = "notifications have been deleted!!!";
 
@@ -487,7 +504,7 @@ class GeneralManager extends Netclive {
         return $this->view("admin.general_manager.task_requests", compact("auth", "notificationsTabs", "taskRequests", $data));
     }
 
-    private function resolveTaskRequest(int $taskRequestId) {
+    private function approveTaskRequest(int $taskRequestId) {
         $taskId = $_GET['task_id'];
 
 
@@ -500,13 +517,15 @@ class GeneralManager extends Netclive {
 
             $taskRequest->update(["status" => "approved"]);
 
+            $this->pushNotificationCreation("approveRequest", $taskRequest->taskId, $taskRequest->taskDepartment);
+
             $_SESSION['message'] = "task request has been approved!!!";
 
             return header("Location: ?general+manager/show+requests");
         }
     }
 
-    private function unresolveTaskRequest(int $taskRequestId) {
+    private function unapproveTaskRequest(int $taskRequestId) {
         $taskId = $_GET['task_id'];
 
         if($taskRequest = (new TRs())->find()->where(
@@ -517,6 +536,8 @@ class GeneralManager extends Netclive {
         )->fetchThisQuery()){
 
             $taskRequest->update(["status" => "unapproved"]);
+
+            $this->pushNotificationCreation("unapproveRequest", $taskRequest->taskId, $taskRequest->taskDepartment);
 
             $_SESSION['message'] = "task request has been unapproved!!!";
 

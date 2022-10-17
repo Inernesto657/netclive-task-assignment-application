@@ -19,8 +19,6 @@
                 <thead>
                     <tr>
                         <td>action</td>
-                        <td>actor details</td>
-                        <td>actor role</td>
                         <td>time</td>
                         <td><a href="/netclive-task-assignment-application/public/?general+manager/notification+view+update" class="btn btn-notification-tab <?php echo ($notificationsTabs) ? "active" : ""; ?>">mark as seen</a></td>
                         <td><a href="/netclive-task-assignment-application/public/?general+manager/delete+notifications" class="btn btn-delete-notification-tab <?php echo ($notificationsTabs) ? "active" : ""; ?>">delete all</a></td>
@@ -36,26 +34,7 @@
                                 </td>
 
                                 <td>
-                                    <?php echo ucfirst($notificationsTab->actor); ?>
-                                </td>
-
-                                <td>
-                                    <?php foreach($roles as $role): ?>
-
-                                        <?php if($role->hierarchicalValue == $notificationsTab->actorHierarchicalValue): ?>
-
-                                            <?php 
-                                                echo ucfirst($role->name);
-                                                break; 
-                                            ?>
-
-                                        <?php endif; ?>
-
-                                    <?php endforeach; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo $notificationsTab->time; ?>
+                                    <?php echo date("D, F j, Y, g:i a", strtotime($notificationsTab->time)); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
