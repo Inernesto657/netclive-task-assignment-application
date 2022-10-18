@@ -13,18 +13,16 @@
         </div>
 
         <section class="task-info">
-            <h2>list of assigned tasks</h2>
+            <h2>list of unassigned tasks for sales department</h2>
 
             <table class="table">
                 <thead>
                     <tr>
-                        <td>task id</td>
-                        <td>task name</td>
-                        <td>assignor</td>
-                        <td>assignee</td>
-                        <td>assignee role</td>
-                        <td>assignee department</td>
-                        <td>task description</td>
+                        <td>id</td>
+                        <td>Name</td>
+                        <td>Task Cartegory</td>
+                        <td>Department</td>
+                        <td>Description</td>
                         <td>Status</td>
                     </tr>
                 </thead>
@@ -33,41 +31,23 @@
                         <?php foreach($tasks as $task) : ?>
                             <tr>
                                 <td>
-                                    <?php echo ucfirst($task->taskId); ?>
+                                    <?php echo ucfirst($task->id); ?>
+                                </td>
+                        
+                                <td>
+                                    <?php echo ucfirst($task->name); ?>
                                 </td>
 
                                 <td>
-                                    <?php echo ucfirst($task->taskName); ?>
+                                    <?php echo ucfirst($task->taskCartegory); ?>
                                 </td>
 
                                 <td>
-                                    <?php echo ucfirst($task->assignor); ?>
-                                </td>
-                                
-                                <td>
-                                    <?php echo ucfirst($task->assignee); ?>
+                                    <?php echo ucfirst($task->department); ?>
                                 </td>
 
                                 <td>
-                                    <?php foreach ($roles as $role): ?>
-
-                                        <?php if($role->hierarchicalValue == $task->assigneeHierarchicalValue): ?>
-
-                                            <?php echo ucfirst($role->name); ?>
-
-                                            <?php break; ?>
-
-                                        <?php endif; ?>
-
-                                    <?php endforeach; ?>
-                                </td>
-
-                                <td>
-                                    <?php echo ucfirst($task->assigneeDepartment); ?>
-                                </td>
-
-                                <td>
-                                    <?php echo ucfirst($task->taskDescription); ?>
+                                    <?php echo ucfirst($task->description); ?>
                                 </td>
 
                                 <td>
@@ -75,7 +55,7 @@
                                 </td>
 
                                 <td>
-                                    <a class="btn cancel-btn" href="/netclive-task-assignment-application/public/?general+manager/cancel+task/<?php echo $task->taskId; ?>">cancel</a>
+                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?department+manager/show+assign+task+form/<?php echo $task->id; ?>">assign</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

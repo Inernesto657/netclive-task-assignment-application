@@ -1,4 +1,4 @@
-<?php require_once("header.php"); ?>
+<?php  require_once("header.php"); ?>
 
 <body>
     <?php  require_once("side_nav.php"); ?>
@@ -60,4 +60,4 @@
     </div>
 </body>
 
-<?php require_once("footer.php"); ?>
+<?php  require_once("footer.php"); ?>

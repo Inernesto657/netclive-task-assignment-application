@@ -20,8 +20,7 @@
                     <tr>
                         <td>action</td>
                         <td>time</td>
-                        <td><a href="/netclive-task-assignment-application/public/?general+manager/notification+view+update" class="btn btn-notification-tab <?php echo ($notificationsTabs) ? "active" : ""; ?>">mark as seen</a></td>
-                        <td><a href="/netclive-task-assignment-application/public/?general+manager/delete+notifications" class="btn btn-delete-notification-tab <?php echo ($notificationsTabs) ? "active" : ""; ?>">delete all</a></td>
+                        <td><a href="/netclive-task-assignment-application/public/?department+manager/notification+view+update" class="btn btn-notification-tab <?php echo ($notificationsTabs) ? "active" : ""; ?>">mark as seen</a></td>
                     </tr>
                 </thead>
                 <tbody>

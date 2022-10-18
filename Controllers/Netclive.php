@@ -6,8 +6,6 @@ use Models\Users;
 use Models\Tasks;
 use Core\Authentication as Auth;
 use Models\Notifications;
-use PDO;
-use PDOException;
 
 class Netclive extends Controller{
     use TaskManager, NotificationManager;
@@ -35,17 +33,12 @@ class Netclive extends Controller{
         "unapproveRequest"  =>  "a task request with task id :id was unapproved by :by",
     ];
 
-    protected $notificationsTabs = [];
-
-
     public function __construct(){
         if((new Auth())->loggedIn()){
 
             $this->fetchAllUsers();
 
             $this->fetchAllTasks();
-
-            $this->fetchNotificationsTabs();
         }else{
 
             header("Location: /netclive-task-assignment-application/public/");
@@ -62,7 +55,7 @@ class Netclive extends Controller{
      */
     public function __call($method, $args){
         
-        if(method_exists($this, $method)) {
+        if(method_exists(__CLASS__, $method)) {
             return call_user_func_array([$this, $method], $args);
         }
 
@@ -78,7 +71,7 @@ class Netclive extends Controller{
      */
     public function __get($property){
 
-        if(property_exists($this, $property)) {
+        if(property_exists(__CLASS__, $property)) {
             return $this->$property;
         }
 
@@ -94,7 +87,7 @@ class Netclive extends Controller{
      */
     public function __set($property, $value){
 
-        if(property_exists($this, $property)) {
+        if(property_exists(__CLASS__, $property)) {
             $this->$property = $value;
         }
 
@@ -161,28 +154,9 @@ class Netclive extends Controller{
         }
     }
 
-    private function fetchNotificationsTabs() {
-        $user = (new Auth())->user();
-
-        $notificationsTabs = [];
-
-        $notifications = (new Notifications());
-
-        $sql = "SELECT * FROM " . $notifications->DBTABLE . " WHERE time >= ?";
-
-        $notifications = $notifications->execute($sql, [$user->updatedAt])->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach($notifications as $notification){
-
-            $notificationsTabs[] = (object) $notification;
-        }
-
-        $this->notificationsTabs = $notificationsTabs;
-    }
-
     protected function permissionRestricted() {
         
-        $_SESSION["error"] = "Access Denied: You cannot not proceed with this action";
+        $_SESSION["error"] = "Access Denied: You cannot proceed with this action";
 
         return header("Location: ?netclive/index/");
     }

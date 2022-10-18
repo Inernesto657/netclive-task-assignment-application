@@ -1,51 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Worker</title>
-</head>
+<?php  require_once("header.php"); ?>
+
 <body>
-    
-    <div class="tasks-list" id="tasks-list">
-    <h2>List of Tasks</h2>
-        <table>
-            <thead>
-                <tr>
-                    <td>Name</td>
-                    <td>Task Cartegory</td>
-                    <td>Department</td>
-                    <td>Description</td>
-                    <td>Status</td>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach($tasks as $task) : ?>
+    <?php  require_once("side_nav.php"); ?>
+
+    <div class="main">
+        <div class="message <?php echo isset($data["message"]) ? "active" : ""; ?>">
+            <p><?php echo isset($data["message"]) ? $data["message"] : ""; ?></p>
+        </div>
+
+        <div class="error <?php echo isset($data["error"]) ? "active" : ""; ?>">
+            <p><?php echo isset($data["error"]) ? $data["error"] : ""; ?></p>
+        </div>
+
+        <section class="task-info">
+            <h2>list of tasks assigned to you</h2>
+
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>
-                            <?php echo ucfirst($task->name); ?>
-                        </td>
-
-                        <td>
-                            <?php echo ucfirst($task->taskCartegory); ?>
-                        </td>
-
-                        <td>
-                            <?php echo ucfirst($task->department); ?>
-                        </td>
-
-                        <td>
-                            <?php echo ucfirst($task->description); ?>
-                        </td>
-
-                        <td>
-                            <?php echo ucfirst($task->status); ?>
-                        </td>
+                        <td>task id</td>
+                        <td>task name</td>
+                        <td>assignor</td>
+                        <td>assignee</td>
+                        <td>assignee role</td>
+                        <td>assignee department</td>
+                        <td>task description</td>
+                        <td>Status</td>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>        
+                </thead>
+                <tbody>
+                    <?php if($tasks) : ?>
+                        <?php foreach($tasks as $task) : ?>
+                            <tr>
+                                <td>
+                                    <?php echo ucfirst($task->taskId); ?>
+                                </td>
+
+                                <td>
+                                    <?php echo ucfirst($task->taskName); ?>
+                                </td>
+
+                                <td>
+                                    <?php echo ucfirst($task->assignor); ?>
+                                </td>
+                                
+                                <td>
+                                    <?php echo ucfirst($task->assignee); ?>
+                                </td>
+
+                                <td>
+                                    <?php foreach ($roles as $role): ?>
+
+                                        <?php if($role->hierarchicalValue == $task->assigneeHierarchicalValue): ?>
+
+                                            <?php echo ucfirst($role->name); ?>
+
+                                            <?php break; ?>
+
+                                        <?php endif; ?>
+
+                                    <?php endforeach; ?>
+                                </td>
+
+                                <td>
+                                    <?php echo ucfirst($task->assigneeDepartment); ?>
+                                </td>
+
+                                <td>
+                                    <?php echo ucfirst($task->taskDescription); ?>
+                                </td>
+
+                                <td>
+                                    <?php echo ucfirst($task->status); ?>
+                                </td>
+
+                                <td>
+                                    <a class="btn assign-btn" href="/netclive-task-assignment-application/public/?worker/update+task+status/<?php echo $task->taskId; ?>">completed</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>        
+        </section>
     </div>
 </body>
-</html>
+
+<?php  require_once("footer.php"); ?>

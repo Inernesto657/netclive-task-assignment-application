@@ -15,7 +15,7 @@
         <section class="task-assign-form">
             <h2>assign task</h2>
 
-            <form action="/netclive-task-assignment-application/public/?general+manager/assign+task" method="post">
+            <form action="/netclive-task-assignment-application/public/?worker/assign+task" method="post">
                 <input type="hidden" name="taskId" required readonly value="<?php echo $task->id; ?>">
                 <input type="hidden" name="assignor" required readonly value="<?php echo $auth->firstName; ?>">
 

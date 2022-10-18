@@ -1,75 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - General Manager</title>
+<?php  require_once("header.php"); ?>
 
-    <!-- font awesome cdn css link-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-
-    <!-- custom css link -->
-    <link rel="stylesheet" href="/netclive-task-assignment-application/public/css/admin.css">    
-</head>
 <body>
-    <div class="sidebar" id="sidebar">
-        
-        <a href="/netclive-task-assignment-application/public/" class="logo"><span>N</span>etclive</a>
-
-        <div class="dashboard-info">
-            <p>general manager</p>
-        </div>
-
-        <nav class="navbar">
-            <div class="notification">
-                <a href="#" >notifications</a>
-                <div class="icon"></div>
-            </div>
-            <a href="/netclive-task-assignment-application/public/?netclive/showCreateTaskForm">create task</a>
-            <a href="#">Assign Task</a>
-            <a href="#">all users</a>
-            <a href="#">all task</a>
-            <a href="#" id="sales-nav">sales department</a>
-            <a href="#" class="sub-nav" id="sales-sub-nav">users</a>
-            <a href="#" class="sub-nav" id="sales-sub-nav">assigned task</a>
-            <a href="#" class="sub-nav" id="sales-sub-nav">unassigned task</a>
-            <a href="#" id="production-nav">production department</a>
-            <a href="#" class="sub-nav" id="production-sub-nav">users</a>
-            <a href="#" class="sub-nav" id="production-sub-nav">assigned task</a>
-            <a href="#" class="sub-nav" id="production-sub-nav">unassigned task</a>
-        </nav>
-    </div>
-
-    <header>
-        <h2>welcome ernest</h2>
-        <div class="icons">
-            <a href="/netclive-task-assignment-application/public/?login/cancel"><i class="fas fa-sign-out" id="log-out-btn"></i> log out</a>
-        </div>
-    </header>
+    <?php  require_once("side_nav.php"); ?>
 
     <div class="main">
-        <section class="task-create-form">
-            <h2>add new task</h2>
+        <div class="message <?php echo isset($data["message"]) ? "active" : ""; ?>">
+            <p><?php echo isset($data["message"]) ? $data["message"] : ""; ?></p>
+        </div>
 
-            <form action="#" method="post">
+        <div class="error <?php echo isset($data["error"]) ? "active" : ""; ?>">
+            <p><?php echo isset($data["error"]) ? $data["error"] : ""; ?></p>
+        </div>
+
+        <section class="task-create-form">
+            <h2>create new task</h2>
+
+            <form action="/netclive-task-assignment-application/public/?department+manager/create+task" method="post">
                 <label for="name">name:</label>
                 <input type="text" name="name" required>
 
                 <label for="taskCartegory">select role category:</label>
                 <select name="taskCartegory" id="" required>
-                    <option value="department manager">department manager</option>
-                    <option value="worker">worker</option>
+                    <optgroup label="--select a role for this task--">
+                        <option value="">--select from list--</option>
+                        <option value="department manager">department manager</option>
+                        <option value="worker">worker</option>
+                    </optgroup>
+                </select>
+
+                <label for="taskCartegoryHierarchicalValue">select hierarchical value:</label>
+                <select name="taskCartegoryHierarchicalValue" id="" required>
+                    <optgroup label="--select a role for this task--">
+                        <option value="">--select from list--</option>
+                        <option value="2">select this option for department managers</option>
+                        <option value="3">select this option for workers</option>
+                    </optgroup>
                 </select>
 
                 <label for="department">select department:</label>
                 <select name="department" id="" required>
-                    <option value="sales">sales</option>
-                    <option value="production">production</option>
+                    <optgroup label="--select task department--">
+                        <option value="">--select from list--</option>
+                        <option value="<?php echo $auth->department; ?>"><?php echo $auth->department; ?></option>
+                    </optgroup>
                 </select>
 
                 <label for="description">description:</label>
-                <textarea name="" id="" cols="30" rows="10"></textarea>
+                <textarea name="description" id="" cols="30" rows="10"></textarea>
 
                 <div class="submit-box">
                     <input type="submit" class="btn" value="create task">
@@ -77,7 +54,6 @@
             </form>
         </section>
     </div>
-
-    <script src="/netclive-task-assignment-application/public/js/admin.js"></script>
 </body>
-</html>
+
+<?php  require_once("footer.php"); ?>

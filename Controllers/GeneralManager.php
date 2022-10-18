@@ -9,8 +9,12 @@ use Models\AssignedTasks as ATs;
 use Models\Notifications;
 use Core\Authentication as Auth;
 use Core\Request;
+use PDO;
+use PDOException;
 
 class GeneralManager extends Netclive {
+
+    private $notificationsTabs = [];
 
     /**
      * This magic custom method allows
@@ -22,7 +26,7 @@ class GeneralManager extends Netclive {
      */
     public function __call($method, $args){
         
-        if(method_exists($this, $method)) {
+        if(method_exists(__CLASS__, $method)) {
             return call_user_func_array([$this, $method], $args);
         }
 
@@ -38,7 +42,7 @@ class GeneralManager extends Netclive {
      */
     public function __get($property){
 
-        if(property_exists($this, $property)) {
+        if(property_exists(__CLASS__, $property)) {
             return $this->$property;
         }
 
@@ -54,11 +58,36 @@ class GeneralManager extends Netclive {
      */
     public function __set($property, $value){
 
-        if(property_exists($this, $property)) {
+        if(property_exists(__CLASS__, $property)) {
             $this->$property = $value;
         }
 
         return $this->permissionRestricted();
+    }
+
+    public function __construct() {
+        parent::__construct();
+
+        $this->fetchNotificationsTabs();
+    }
+
+    private function fetchNotificationsTabs() {
+        $user = (new Auth())->user();
+
+        $notificationsTabs = [];
+
+        $notifications = (new Notifications());
+
+        $sql = "SELECT * FROM " . $notifications->DBTABLE . " WHERE time >= ?";
+
+        $notifications = $notifications->execute($sql, [$user->updatedAt])->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($notifications as $notification){
+
+            $notificationsTabs[] = (object) $notification;
+        }
+
+        $this->notificationsTabs = $notificationsTabs;
     }
 
     public function index() {
@@ -94,7 +123,7 @@ class GeneralManager extends Netclive {
         ){
             $taskUpdate = $task->update(["status" => "completed"]);
 
-            $this->pushNotificationCreation("completeTask", $task->id, $task->department);
+            $this->pushNotificationCreation("completeTask", $task->id, $task->assigneeDepartment);
 
             $_SESSION['message'] = "this task {$task->taskName} has now been updated to completed!!!";
             
