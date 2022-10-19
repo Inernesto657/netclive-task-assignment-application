@@ -439,24 +439,46 @@ class DepartmentManager extends  GM{
 
         if(count($taskAssignments) < 3){
 
-            if($taskAssignmentId = (new ATs())->create($request)){
+            if($this->assignTaskLogic()){
 
-                $task = (new Tasks())->find()->where(["id" => $request->taskId])->fetchThisQuery();
+                if($taskAssignmentId = (new ATs())->create($request)){
 
-                $task->save(["status" => "assigned"]);
+                    $task = (new Tasks())->find()->where(["id" => $request->taskId])->fetchThisQuery();
 
-                $this->pushNotificationCreation("assignTask", $task->id, $request->assigneeDepartment, $request->assignee);
+                    $task->save(["status" => "assigned"]);
 
-                $_SESSION['message'] = "task has been assigned!!!";
+                    $this->pushNotificationCreation("assignTask", $task->id, $request->assigneeDepartment, $request->assignee);
 
-                return header("Location: ?department+manager/index");
+                    $_SESSION['message'] = "task has been assigned!!!";
+
+                    return header("Location: ?department+manager/index");
+                }
             }
+
+            return $this->permissionRestricted();
         }else{
 
             $_SESSION['error'] = "sorry, can not assign more than 3 tasks to an assignee!!!";
 
             return header("Location: ?department+manager/index");
         }
+    }
+
+    private function assignTaskLogic(object $request, object $auth) {
+
+        if($request->assigneeHierarchicalValue > $auth->hierarchicalValue) {
+
+            return false;
+        }
+
+        if(($request->assigneeHierarchicalValue == $auth->hierarchicalValue) &&
+            ($request->assignee != $auth->email)
+        ){
+            
+            return false;
+        }
+
+        return true;
     }
 } 
 ?>
