@@ -4,25 +4,33 @@ use Controllers\DepartmentManager as DM;
 use Models\Roles;
 use Models\Users;
 use Models\Tasks;
-use Models\TaskRequests as TRs;
 use Models\AssignedTasks as ATs;
-use Models\Notifications;
 use Core\Authentication as Auth;
 use Core\Request;
 use PDO;
 use PDOException;
 
+/**
+ * This Class handles functionalities for the worker
+ * Class Worker
+ * @package Controllers
+ */
 class Worker extends DM{
     
+    /**
+     * sets notifications to be seen by the logged-in user (i.e worker)
+     */
     private $notificationsTabs = false;
 
     /**
-     * This magic custom method allows
+     * this magic custom method allows
+     * objects of this class, as well as 
      * decendants of this class to call
-     * inaccessible methods of this class
-     * @param $method (method name)
-     * @param $args (arguments passed to the method, if any)
-     * @return function (i.e the inaccessible method of this class)
+     * inaccessible methods of this class outside 
+     * this class domain.
+     * @param mixed method (method name)
+     * @param mixed args (arguments passed to the method, if any)
+     * @return mixed
      */
     public function __call($method, $args){
         
@@ -34,11 +42,13 @@ class Worker extends DM{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to read
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @return mixed (the called property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to call
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @return mixed
      */
     public function __get($property){
 
@@ -50,11 +60,14 @@ class Worker extends DM{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to write data to
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @param $value (data to write to the property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to set
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @param mixed value (data to write to the property)
+     * @return mixed
      */
     public function __set($property, $value){
 
@@ -65,6 +78,11 @@ class Worker extends DM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays general information about tasks assigned 
+     * to logged-in user (i.e worker)
+     * @return method (i.e the corresponding veiw)
+     */    
     public function index() {
         $data  = [];
 
@@ -87,6 +105,13 @@ class Worker extends DM{
         return $this->view("admin.worker.index", compact("notificationsTabs", "roles", "tasks", "auth", $data));
     }
 
+    /**
+     * displays the unassigned tasks in the sales department
+     * NB: when the logged-in user (worker) does
+     * not belong to the sales department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showSalesUnassignedTasks() {
         $auth = (new Auth())->user();
 
@@ -117,6 +142,13 @@ class Worker extends DM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the unassigned tasks in the production department
+     * NB: when the logged-in user (worker) does
+     * not belong to the production department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showProductionUnassignedTasks() {
         $auth = (new Auth())->user();
 
@@ -147,6 +179,13 @@ class Worker extends DM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the task assignment form
+     * NB: allows the logged-in user (worker) to 
+     * assign task to self and nobody else
+     * @param int taskId
+     * @return method (the corresponding view)
+     */
     private function showAssignTaskForm(int $taskId) {
         $auth = (new Auth())->user();
 
@@ -170,6 +209,12 @@ class Worker extends DM{
         return header("Location: ?worker/index");
     }
 
+    /**
+     * creates the task assigment into the assigned_tasks DB once the 
+     * form request has been made
+     * @param object request (request from the form) 
+     * @return function (i.e redirection back to index method)
+     */ 
     private function assignTask(Request $request) {
         $taskAssignmentObj = (new ATs())->find()->where(["assignee" => $request->assignee])->fetchThisQuery();
 
@@ -203,6 +248,11 @@ class Worker extends DM{
         }
     }
 
+    /**
+     * updates the status of tasks assigned to the logged-in user
+     * to completed
+     * @return function (i.e redirection back to the index method)
+     */
     private function updateTaskStatus(int $taskId) {
         $auth = (new Auth())->user();
 

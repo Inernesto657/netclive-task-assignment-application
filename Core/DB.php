@@ -3,15 +3,59 @@ namespace Core;
 use PDO;
 use PDOException;
 
+/**
+ * This Class defines functionalities for accessing the DB
+ * Class DB
+ * @package Core
+ */
 class DB {
 
+    /**
+     * stores the host name for the DB
+     * @var mixed DBHOST 
+     */
     private $DBHOST        = "localhost";
+
+    /**
+     * stores the name of the DB
+     * @var mixed DBNAME 
+     */
     private $DBNAME        = "task_application";
+
+    /**
+     * stores the default character set for the DB connection
+     * @var mixed DBNAME 
+     */
     private $DBCHARSET     = "UTF8";
+
+    /**
+     * stores the user for the DB connection
+     * @var mixed DBUSER
+     */
     private $DBUSER        = "root";
+
+    /**
+     * stores the password for the DB connection
+     * @var mixed DBPASSWORD 
+     */
     private $DBPASSWORD    = "";
+
+    /**
+     * stores the DB connection object
+     * @var mixed DBCONNECT 
+     */
     private $DBCONNECT;
+
+    /**
+     * stores the sql statement
+     * @var mixed SQL 
+     */
     public  $SQL           = "";
+
+    /**
+     * stores the sql statement parameters
+     * @var mixed SQLPARAMETERS 
+     */
     public  $SQLPARAMETERS = [];
 
     /**

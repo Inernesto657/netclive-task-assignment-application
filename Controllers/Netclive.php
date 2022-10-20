@@ -7,21 +7,32 @@ use Models\Tasks;
 use Core\Authentication as Auth;
 use Models\Notifications;
 
+/**
+ * This Class handles general functionalities for the company staffs 
+ * and serves as the parent class for the General Manager Class
+ * Class Netclive
+ * @package Controllers
+ */
 class Netclive extends Controller{
-    use TaskManager, NotificationManager;
 
     /**
-     * Store total number of users in the company
-     * @var $users
+     * stores total number of users in the company
+     * @var mixed users
      */
     protected $users = [];
 
     /**
-     * Store total numnber of tasks assigned in the company
-     * @var $tasks
+     * stores total numnber of tasks assigned in the company
+     * @var mixed tasks
      */
     protected $tasks = [];
 
+    /**
+     * custom action messages for each action made by the logged-in user
+     * NB: this messages are edited accordingly and stored in the notifications DB
+     * after the corresponding action has been made
+     * @var array notificationMessage
+     */
     protected $notificationMessage = [
         "createTask"        =>  "a task with id :id was created by :by",
         "assignTask"        =>  "a task with id :id was assigned by :by and has been assigned to :to",
@@ -33,6 +44,10 @@ class Netclive extends Controller{
         "unapproveRequest"  =>  "a task request with task id :id was unapproved by :by",
     ];
 
+    /**
+     * calls some methods of this class
+     * when ever an object is being instantiated
+     */
     public function __construct(){
         if((new Auth())->loggedIn()){
 
@@ -46,12 +61,14 @@ class Netclive extends Controller{
     }
 
     /**
-     * This magic custom method allows
+     * this magic custom method allows
+     * objects of this class, as well as 
      * decendants of this class to call
-     * inaccessible methods of this class
-     * @param $method (method name)
-     * @param $args (arguments passed to the method, if any)
-     * @return function (i.e the inaccessible method of this class)
+     * inaccessible methods of this class outside 
+     * this class domain.
+     * @param mixed method (method name)
+     * @param mixed args (arguments passed to the method, if any)
+     * @return mixed
      */
     public function __call($method, $args){
         
@@ -63,11 +80,13 @@ class Netclive extends Controller{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to read
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @return mixed (the called property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to call
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @return mixed
      */
     public function __get($property){
 
@@ -79,11 +98,14 @@ class Netclive extends Controller{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to write data to
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @param $value (data to write to the property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to set
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @param mixed value (data to write to the property)
+     * @return mixed
      */
     public function __set($property, $value){
 
@@ -94,6 +116,12 @@ class Netclive extends Controller{
         return $this->permissionRestricted();
     }    
     
+    /**
+     * checks the logged-in user's hierarchical value
+     * (i.e general manager, department manager or worker) and
+     * redirect's the logged-in user to the corresponding route/url
+     * @return method
+     */
     protected function index(){
         $user = (new Auth())->user();
 
@@ -112,20 +140,33 @@ class Netclive extends Controller{
         }
     }
 
+    /**
+     * redirect's to the general manager route/url
+     * @return function (redirection to the corresponding route/url)
+     */
     private function redirectToGeneralMangerRoute(){
         return header("Location: /netclive-task-assignment-application/public/?general+manager/index");
     }
 
+    /**
+     * redirect's to the department manager route/url
+     * @return function (redirection to the corresponding route/url)
+     */
     private function redirectToDepartmentManagerRoute(){
         return header("Location: /netclive-task-assignment-application/public/?department+manager/index");
     }
 
+    /**
+     * redirect's to the worker route/url
+     * @return function (redirection to the corresponding route/url)
+     */
     private function redirectToWorkerRoute(){
         return header("Location: /netclive-task-assignment-application/public/?worker/index");
     }
 
     /**
-     * Fetch all users from the database into the $users property
+     * fetches all users from the database into the $users property
+     * @return void
      */    
     private function fetchAllUsers() {
         $users = (new Users())->find()->fetchThisQuery();
@@ -140,7 +181,8 @@ class Netclive extends Controller{
     }
 
     /**
-     * Fetch all tasks from the database into the $tasks property
+     * fetches all tasks from the database into the $tasks property
+     * @return void
      */    
     private function fetchAllTasks() {
         $tasks = (new Tasks())->find()->fetchThisQuery();
@@ -154,6 +196,12 @@ class Netclive extends Controller{
         }
     }
 
+    /**
+     * denies access to restricted methods of this
+     * class or child class, made by objects of this class,
+     * or objects of child class
+     * @return function (i.e redirection to the index method)
+     */
     protected function permissionRestricted() {
         
         $_SESSION["error"] = "Access Denied: You cannot proceed with this action";
@@ -161,6 +209,11 @@ class Netclive extends Controller{
         return header("Location: ?netclive/index/");
     }
 
+    /**
+     * creates a new notification whenever an action is being
+     * made by the logged-in user
+     * @return method (this method creates the notification)
+     */
     protected function pushNotificationCreation(string $action, string $taskId, string $taskDepartment) {
         $actionMessage = $this->notificationMessage[$action] ?? "";
 

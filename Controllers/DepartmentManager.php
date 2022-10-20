@@ -12,17 +12,43 @@ use Core\Request;
 use PDO;
 use PDOException;
 
+/**
+ * This Class handles functionalities for the department manager
+ * and serves as the parent class for the Worker Class
+ * Class DepartmentManager
+ * @package Controllers
+ */
 class DepartmentManager extends  GM{
 
+    /**
+     * stores the notifications yet to be seen
+     * by the department manager
+     * NB: this consists of only notifications perculiar
+     * to the same department as the depeartment manager
+     * @var mixed notificationsTabs
+     */
     private $notificationsTabs = [];
 
     /**
-     * This magic custom method allows
+     * calls parent constructors (if any)
+     * and also some methods of this class
+     * when ever an object is being instantiated
+     */
+    public function __construct() {
+        parent::__construct();
+
+        $this->fetchNotificationsTabs();
+    }
+
+    /**
+     * this magic custom method allows
+     * objects of this class, as well as 
      * decendants of this class to call
-     * inaccessible methods of this class
-     * @param $method (method name)
-     * @param $args (arguments passed to the method, if any)
-     * @return function (i.e the inaccessible method of this class)
+     * inaccessible methods of this class outside 
+     * this class domain.
+     * @param mixed method (method name)
+     * @param mixed args (arguments passed to the method, if any)
+     * @return mixed
      */
     public function __call($method, $args){
         
@@ -34,11 +60,13 @@ class DepartmentManager extends  GM{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to read
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @return mixed (the called property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to call
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @return mixed
      */
     public function __get($property){
 
@@ -50,11 +78,14 @@ class DepartmentManager extends  GM{
     }
 
     /**
-     * This magic custom method allows
-     * decendants of this class to write data to
-     * inaccessible properties of this class
-     * @param $property (property name)
-     * @param $value (data to write to the property)
+     * this magic custom method allows
+     * objects of this class, as well as 
+     * decendants of this class to set
+     * inaccessible properties of this class outside 
+     * this class domain.
+     * @param mixed property (property name)
+     * @param mixed value (data to write to the property)
+     * @return mixed
      */
     public function __set($property, $value){
 
@@ -65,12 +96,11 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
-    public function __construct() {
-        parent::__construct();
-
-        $this->fetchNotificationsTabs();
-    }
-
+    /**
+     * fetches and sets notifications belonging to this department
+     * and has not been seen by the department manager
+     * @return void
+     */
     private function fetchNotificationsTabs() {
         $user = (new Auth())->user();
 
@@ -90,6 +120,11 @@ class DepartmentManager extends  GM{
         $this->notificationsTabs = $notificationsTabs;
     }
 
+    /**
+     * displays general information about task assignment to the logged-in user 
+     * (i.e department manager)
+     * @return method (i.e the corresponding view)
+     */
     public function index() {
         $data  = [];
 
@@ -112,6 +147,11 @@ class DepartmentManager extends  GM{
         return $this->view("admin.department_manager.index", compact("notificationsTabs", "roles", "tasks", "auth", $data));
     }
 
+    /**
+     * updates the status of tasks assigned to the logged-in user
+     * to completed
+     * @return function (i.e redirection back to the index method)
+     */
     private function updateTaskStatus(int $taskId) {
         $auth = (new Auth())->user();
 
@@ -135,6 +175,11 @@ class DepartmentManager extends  GM{
         return header("Location: ?department+manager/index");
     }    
 
+    /**
+     * displays notifications belonging to this department
+     * and has not been seen by the department manager
+     * @return method (i.e the corresponding view)
+     */
     private function showNotificationsTabs() {
         $data  = [];
         
@@ -147,6 +192,11 @@ class DepartmentManager extends  GM{
         return $this->view("admin.department_manager.notifications", compact("auth", "notificationsTabs", "roles", $data));
     }
 
+    /**
+     * updates the notifications once they have been marked
+     * as seen by the logged-in user (i.e department manager)
+     * @return fucntion (i.e redirection back to showNotificationsTabs method)
+     */
     private function notificationViewUpdate() {
         date_default_timezone_set("America/New_York");
 
@@ -158,6 +208,10 @@ class DepartmentManager extends  GM{
         }
     }    
 
+    /**
+     * displays the form to create tasks
+     * @return method (i.e the corresponding view)
+     */
     private function showCreateTaskForm() {
         $data = [];
 
@@ -168,6 +222,12 @@ class DepartmentManager extends  GM{
         return $this->view("admin.department_manager.create_task_form", compact("auth", "notificationsTabs", $data));
     }
 
+    /**
+     * creates the task into the Tasks DB once the 
+     * form request has been made
+     * @param object request
+     * @return function (i.e redirection back to showCreateTaskForm method)
+     */
     private function createTask(Request $request) {
         
         if($taskId = (new Tasks())->create($request)){
@@ -180,6 +240,13 @@ class DepartmentManager extends  GM{
         }
     }
 
+    /**
+     * displays the users (staffs) in the sales department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the sales department, 
+     * a permissionRestricted method is called
+     * @return method (i.e the corressponding view)
+     */
     private function salesUsers() {
         $auth = (new Auth())->user();
         
@@ -207,6 +274,13 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the users (staffs) in the production department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the production department, 
+     * a permissionRestricted method is called
+     * @return method (i.e the corresponding view)
+     */
     private function productionUsers() {
         $auth = (new Auth())->user();
         
@@ -234,6 +308,13 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the assigned tasks in the sales department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the sales department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showSalesAssignedTasks() {
         $auth = (new Auth())->user();
 
@@ -261,6 +342,13 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the assigned tasks in the production department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the production department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showProductionAssignedTasks() {
         $auth = (new Auth())->user();
 
@@ -288,6 +376,13 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the unassigned tasks in the sales department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the sales department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showSalesUnassignedTasks() {
         $auth = (new Auth())->user();
 
@@ -318,6 +413,13 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * displays the assigned tasks in the production department
+     * NB: when the logged-in user (department manager) does
+     * not belong to the production department, 
+     * a permissionRestricted method is called
+     * @return method (the corresponding view)
+     */
     private function showProductionUnassignedTasks() {
         $auth = (new Auth())->user();
 
@@ -348,6 +450,14 @@ class DepartmentManager extends  GM{
         return $this->permissionRestricted();
     }
 
+    /**
+     * cancels a task assignment already made.
+     * NB: initialing creates a request in the task_requests DB
+     * and if request for the said already exists, it has to be
+     * approved before proceeding to cancel task assignment
+     * @param int taskId
+     * @return function (redirection back to index method)
+     */
     private function cancelTask(int $taskId) {
         $auth = (new Auth())->user();
 
@@ -360,7 +470,7 @@ class DepartmentManager extends  GM{
         $taskRequestObj = $taskRequest->execute($sql, [$taskId])->fetchObject($taskRequest::class);
 
         if($taskRequestObj){
-
+            
             if($taskRequestObj->status == "approved"){
 
                 if($taskAssignment = (new ATs())->find()->where(["taskId" => $taskId])->fetchThisQuery()){
@@ -399,9 +509,14 @@ class DepartmentManager extends  GM{
 
         $_SESSION['message'] = "your request has been made and needs to be approved, before you can proceed!!!";
 
-        return header("Location: ?department+manager/show+sales+assigned+tasks");
+        return header("Location: ?department+manager/index");
     }
 
+    /**
+     * displays the task assignment form
+     * @param int taskId
+     * @return method (the corresponding view)
+     */
     private function showAssignTaskForm(int $taskId) {
         $data = [];
 
@@ -426,6 +541,12 @@ class DepartmentManager extends  GM{
         return $this->view("admin.department_manager.assign_task_form", compact("auth", "users", "roles", "notificationsTabs", "task", $data));
     }
 
+    /**
+     * creates the task assigment into the assigned_tasks DB once the 
+     * form request has been made
+     * @param object request (request from the form) 
+     * @return function (i.e redirection back to index method)
+     */    
     private function assignTask(Request $request) {
         $taskAssignmentObj = (new ATs())->find()->where(["assignee" => $request->assignee])->fetchThisQuery();
 
@@ -439,7 +560,7 @@ class DepartmentManager extends  GM{
 
         if(count($taskAssignments) < 3){
 
-            if($this->assignTaskLogic()){
+            if($this->assignTaskLogic($request)){
 
                 if($taskAssignmentId = (new ATs())->create($request)){
 
@@ -464,9 +585,17 @@ class DepartmentManager extends  GM{
         }
     }
 
-    private function assignTaskLogic(object $request, object $auth) {
+    /**
+     * makes the logic for task assignment. 
+     * NB: if logged-in user (department manager) assigns task to a superior or peer,
+     * the logic returns false, else, it returns true
+     * @param object request (request from the form)
+     * @return boolean
+     */
+    private function assignTaskLogic(object $request) {
+        $auth = (new Auth())->user();
 
-        if($request->assigneeHierarchicalValue > $auth->hierarchicalValue) {
+        if($request->assigneeHierarchicalValue < $auth->hierarchicalValue) {
 
             return false;
         }

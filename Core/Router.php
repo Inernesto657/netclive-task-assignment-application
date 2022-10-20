@@ -37,7 +37,10 @@ class Router {
      */    
     private $parameters = [];
 
-
+    /**
+     * calls some methods of this class any time this
+     * class is been called
+     */
     public function __construct(public $url) {
         $this->url = $this->removeQueryStringsVariables($this->url);
 
@@ -52,7 +55,7 @@ class Router {
 
     /**
      * This function sets the default controller(class) name
-     * and action(method) if it is not present in the url
+     * and action(method) if it is not present in the route/url
      * @return object
      */
     private function setUrlVariables(array $url_variables = []) : object {
@@ -67,7 +70,7 @@ class Router {
 
     /**
      * This function returns the controller(class) name
-     * from the url
+     * from the route/url
      * @return string
      */
     private function getController() : string{
@@ -77,7 +80,7 @@ class Router {
 
     /**
      * This function returns the action(method) name
-     * from the url
+     * from the route/url
      * @return string
      */
     private function getAction() : string{
@@ -86,7 +89,7 @@ class Router {
     }
 
     /**
-     * This function returns the argument(variable) from the url if any,
+     * This function returns the argument(variable) from the route/url if any,
      * to be passed when the method is called
      * @return string
      */
@@ -109,6 +112,10 @@ class Router {
         return $this;
     }
 
+    /**
+     * instanciates the Request Class and gets the requests (POST data) if any was made
+     * @return void
+     */
     private function handleRequest() {
         $request = new Request();
 
@@ -118,7 +125,7 @@ class Router {
     }
 
     /**
-     * This function processes the desired url call; 
+     * This function processes the desired route/url call; 
      * @return;
      */
     public function processUrlCall(){
@@ -156,6 +163,12 @@ class Router {
         return lcfirst(self::convertToStudlyCaps($string));
     }
 
+    /**
+     * removes the query strings from the route/url (if any)
+     * and returns only the route/url part containing the controllers
+     * and actions
+     * @return mixed url
+     */
     private function removeQueryStringsVariables($url) : string {
 
         if(!empty($url)){

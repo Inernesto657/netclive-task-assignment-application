@@ -3,8 +3,16 @@
 namespace Core;
 use Exception;
 
+/**
+ * This Class is responsible for including the view page requested by the controllers
+ * Class View
+ * @package Core
+ */
 Class View {
 
+    /**
+     * processes some functionalities whenever this class is been called
+     */
     public function __construct($view, $data = []){
 
         if(isset($_SESSION["message"])) {
@@ -20,6 +28,10 @@ Class View {
         $this->view($view, $data);
     }
 
+    /**
+     * includes the requested veiw
+     * @return void
+     */
     public function view($view, $data) {
 
         $view = str_replace(".", "/", $view);
@@ -39,6 +51,10 @@ Class View {
         }
     }
 
+    /**
+     * refines the view path name
+     * @return function 
+     */
     public static function removeTrailingDash($view) {
         
         return preg_replace("/[\/\\\]+$/", "", $view);
